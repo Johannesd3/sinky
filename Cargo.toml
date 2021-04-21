@@ -12,4 +12,6 @@ cpal = {version ="0.13", optional = true }
 thiserror = { version = "1", optional = true }
 
 [features]
+default = ["rodio-backend"]
+
 rodio-backend = ["rodio", "cpal", "thiserror"]
