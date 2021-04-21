@@ -1,7 +1,19 @@
 use std::thread;
 
+use cpal::traits::{DeviceTrait, HostTrait};
+use thiserror::Error;
+
 use crate::formats::{F32, I16};
 use crate::{AudioFormat, AudioFormatEnum, Sink, SinkError, SinkMaker};
+
+trait SupportedFormat: AudioFormat
+where
+    Self::Sample: rodio::Sample,
+{
+}
+
+impl SupportedFormat for I16 {}
+impl SupportedFormat for F32 {}
 
 pub fn open<S: SinkMaker>(format: AudioFormatEnum, filters: S) -> S::Output {
     macro_rules! sink {
@@ -13,20 +25,9 @@ pub fn open<S: SinkMaker>(format: AudioFormatEnum, filters: S) -> S::Output {
     match format {
         AudioFormatEnum::F32 => sink!(F32),
         AudioFormatEnum::I16 => sink!(I16),
-        _ => unimplemented!("Abc"),
+        _ => unimplemented!("Rodio supports only f32 and i16 output"),
     }
 }
-
-use cpal::traits::{DeviceTrait, HostTrait};
-use thiserror::Error;
-
-trait SupportedFormat: AudioFormat
-where
-    Self::Sample: rodio::Sample,
-{
-}
-impl SupportedFormat for I16 {}
-impl SupportedFormat for F32 {}
 
 #[derive(Debug, Error)]
 pub enum RodioError {
