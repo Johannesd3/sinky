@@ -13,9 +13,3 @@ impl Default for AudioFormatEnum {
         Self::I16
     }
 }
-
-#[derive(Debug, Clone, Default)]
-pub struct SinkConfig {
-    pub device_name: Option<String>,
-    pub audio_format: AudioFormatEnum,
-}

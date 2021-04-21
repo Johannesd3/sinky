@@ -1,23 +1,13 @@
+use std::fmt;
+
 // Must implement Default, but that's not a problem since this trait
 // is intended to be implemented for unit structs.
 pub trait AudioFormat: Default {
     type Sample: Copy + Send + 'static;
 
-    // Could be practial for use in backends?
-    // const SILENCE: Self::Sample;
-
     // Using &self is usually a zero-cost abstraction for ZSTs, but it would
     // allow dynamical dispatch, whether we need it or not.
     fn from_f32(&self, s: &f32) -> Self::Sample;
-
-    // In case we really would use dynamical dispatch, this function would
-    // improve performance (but we don't)
-    fn from_f32_buf(&self, samples: &[f32], buf: &mut Vec<Self::Sample>) {
-        buf.clear();
-        for s in samples {
-            buf.push(self.from_f32(s));
-        }
-    }
 
     // Converts samples to bytes. Used by many backends.
     fn to_bytes(&self, data: &[Self::Sample], buf: &mut Vec<u8>);
@@ -26,28 +16,59 @@ pub trait AudioFormat: Default {
 // Shortcut to get the sample type of a sink
 type Sample<S> = <<S as Sink>::Format as AudioFormat>::Sample;
 
+#[derive(Debug)]
+pub struct SinkError(Box<dyn std::error::Error + 'static>);
+
+impl SinkError {
+    pub fn new<E: std::error::Error + 'static>(error: E) -> Self {
+        SinkError(Box::new(error))
+    }
+}
+
+impl fmt::Display for SinkError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+impl std::error::Error for SinkError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        Some(self.0.as_ref())
+    }
+}
+
 pub trait Sink {
     type Format: AudioFormat;
 
-    fn start(&mut self) -> std::io::Result<()> {
+    fn start(&mut self) -> Result<(), SinkError> {
         Ok(())
     }
 
-    fn stop(&mut self) -> std::io::Result<()> {
+    fn stop(&mut self) -> Result<(), SinkError> {
         Ok(())
     }
+
+    // Allows in-place modification.
+    fn write(&mut self, data: &mut [Sample<Self>]) -> Result<(), SinkError>;
 
     // There are many further functions possible: e.g. drain, flush, set_volume
+}
 
-    fn write(&mut self, data: &[Sample<Self>]) {
-        // Clones the data and passes it to write_mut. Could be overriden if no in-place
-        // mutation is necessary.
-        let mut data = data.to_vec();
-        self.write_mut(&mut data);
+// Implement `Sink` for every boxed Sink trait object.
+impl<F: AudioFormat> Sink for Box<dyn Sink<Format = F>> {
+    type Format = F;
+
+    fn start(&mut self) -> Result<(), SinkError> {
+        self.as_mut().start()
     }
 
-    // Would allow in-place modification.
-    fn write_mut(&mut self, data: &mut [Sample<Self>]);
+    fn stop(&mut self) -> Result<(), SinkError> {
+        self.as_mut().stop()
+    }
+
+    fn write(&mut self, data: &mut [Sample<Self>]) -> Result<(), SinkError> {
+        self.as_mut().write(data)
+    }
 }
 
 pub mod formats;
@@ -55,28 +76,12 @@ pub mod formats;
 pub mod filters;
 
 mod config;
-
-pub use config::{AudioFormatEnum, SinkConfig};
+pub use config::AudioFormatEnum;
 
 pub trait SinkMaker {
     type Output;
 
     fn apply_filters<S: Sink + 'static>(&self, sink: S) -> Self::Output;
-}
-
-// This struct would usually contain the configuration for the filters.
-struct ExampleSinkMaker;
-
-impl SinkMaker for ExampleSinkMaker {
-    type Output = Box<dyn Sink<Format = formats::F32>>;
-
-    fn apply_filters<S: Sink + 'static>(&self, sink: S) -> Self::Output {
-        use filters::*;
-
-        // TODO: Use &self here to customize the Requantizer
-
-        Box::new(SampleConverter::new(Requantizer::new(sink)))
-    }
 }
 
 pub mod backends;
