@@ -14,7 +14,7 @@ impl AudioFormat for F32 {
     #[inline]
     fn to_bytes(&self, data: &[f32], buf: &mut Vec<u8>) {
         for sample in data {
-            buf.extend(&sample.to_be_bytes());
+            buf.extend(&sample.to_ne_bytes());
         }
     }
 }
@@ -38,7 +38,7 @@ impl AudioFormat for I16 {
     #[inline]
     fn to_bytes(&self, data: &[i16], buf: &mut Vec<u8>) {
         for sample in data {
-            buf.extend(&sample.to_be_bytes());
+            buf.extend(&sample.to_ne_bytes());
         }
     }
 }
@@ -58,7 +58,7 @@ impl AudioFormat for I32 {
     #[inline]
     fn to_bytes(&self, data: &[i32], buf: &mut Vec<u8>) {
         for sample in data {
-            buf.extend(&sample.to_be_bytes());
+            buf.extend(&sample.to_ne_bytes());
         }
     }
 }
@@ -71,7 +71,7 @@ impl i24 {
     #[inline]
     fn pcm_from_i32(sample: i32) -> Self {
         // drop the least significant byte
-        let [a, b, c, _d] = (sample >> 8).to_le_bytes();
+        let [a, b, c, _d] = (sample >> 8).to_ne_bytes();
         i24([a, b, c])
     }
 }
@@ -88,6 +88,7 @@ impl AudioFormat for I24_3 {
 
     fn to_bytes(&self, data: &[i24], buf: &mut Vec<u8>) {
         for sample in data {
+            // The array is already in native endianness
             buf.extend(&sample.0);
         }
     }
@@ -110,7 +111,7 @@ impl AudioFormat for I24_4 {
 
     fn to_bytes(&self, data: &[Self::Sample], buf: &mut Vec<u8>) {
         for sample in data {
-            buf.extend(&sample.to_be_bytes());
+            buf.extend(&sample.to_ne_bytes());
         }
     }
 }
