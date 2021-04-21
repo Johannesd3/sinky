@@ -1,4 +1,3 @@
-
 use super::AudioFormat;
 
 #[derive(Copy, Clone, Default, Debug)]

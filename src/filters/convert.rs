@@ -1,4 +1,3 @@
-
 use crate::{formats, AudioFormat, Sample, Sink};
 
 pub struct SampleConverter<S: Sink> {
@@ -8,12 +7,11 @@ pub struct SampleConverter<S: Sink> {
 }
 
 impl<S: Sink> SampleConverter<S> {
-    pub fn new(sink: S) -> Self
-    {
+    pub fn new(sink: S) -> Self {
         Self {
             sink,
             buf: Vec::new(),
-            format: Default::default()
+            format: Default::default(),
         }
     }
 }

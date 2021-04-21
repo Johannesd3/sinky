@@ -5,7 +5,7 @@ pub enum AudioFormatEnum {
     I16,
     I32,
     I24_3,
-    I24_4
+    I24_4,
 }
 
 impl Default for AudioFormatEnum {
