@@ -4,6 +4,9 @@ pub use convert::SampleConverter;
 mod requantizer;
 pub use requantizer::Requantizer;
 
+mod volume;
+pub use volume::Volume;
+
 use crate::{AudioFormat, Sample, Sink};
 
 pub trait SampleMapper<F: AudioFormat> {
