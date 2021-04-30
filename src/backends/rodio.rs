@@ -3,10 +3,10 @@ use std::thread;
 use cpal::traits::{DeviceTrait, HostTrait};
 use thiserror::Error;
 
-use crate::formats::{F32, I16};
-use crate::{AudioFormat, AudioFormatEnum, Sink, SinkError, SinkMaker};
+use crate::formats::{F32, S16};
+use crate::{AudioFormat, AudioFormatConfig, Sink, SinkError, SinkMaker};
 
-pub fn open<S: SinkMaker>(format: AudioFormatEnum, filters: S) -> S::Output {
+pub fn open<S: SinkMaker>(format: AudioFormatConfig, filters: S) -> S::Output {
     macro_rules! sink {
         ($format:path) => {
             filters.apply_filters(RodioSink::<$format>::open(cpal::default_host(), None))
@@ -14,8 +14,8 @@ pub fn open<S: SinkMaker>(format: AudioFormatEnum, filters: S) -> S::Output {
     }
 
     match format {
-        AudioFormatEnum::F32 => sink!(F32),
-        AudioFormatEnum::I16 => sink!(I16),
+        AudioFormatConfig::F32 => sink!(F32),
+        AudioFormatConfig::S16 => sink!(S16),
         _ => unimplemented!("Rodio supports only f32 and i16 output"),
     }
 }

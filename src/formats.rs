@@ -20,9 +20,9 @@ impl AudioFormat for F32 {
 }
 
 #[derive(Copy, Clone, Default, Debug)]
-pub struct I16;
+pub struct S16;
 
-impl AudioFormat for I16 {
+impl AudioFormat for S16 {
     type Sample = i16;
 
     #[inline]
@@ -44,9 +44,9 @@ impl AudioFormat for I16 {
 }
 
 #[derive(Copy, Clone, Default, Debug)]
-pub struct I32;
+pub struct S32;
 
-impl AudioFormat for I32 {
+impl AudioFormat for S32 {
     type Sample = i32;
 
     #[inline]
@@ -77,13 +77,13 @@ impl i24 {
 }
 
 #[derive(Copy, Clone, Default, Debug)]
-pub struct I24_3;
+pub struct S24_3;
 
-impl AudioFormat for I24_3 {
+impl AudioFormat for S24_3 {
     type Sample = i24;
 
     fn from_f32(&self, s: &f32) -> i24 {
-        i24::pcm_from_i32(I32.from_f32(s))
+        i24::pcm_from_i32(S32.from_f32(s))
     }
 
     fn to_bytes(&self, data: &[i24], buf: &mut Vec<u8>) {
@@ -95,9 +95,9 @@ impl AudioFormat for I24_3 {
 }
 
 #[derive(Copy, Clone, Default, Debug)]
-pub struct I24_4;
+pub struct S24_4;
 
-impl AudioFormat for I24_4 {
+impl AudioFormat for S24_4 {
     type Sample = i32;
 
     fn from_f32(&self, s: &f32) -> i32 {

@@ -21,7 +21,7 @@ impl SinkMaker for ExampleSinkMaker {
 fn main() {
     const BUFFER_SIZE: usize = 1024;
 
-    let mut backend = sinky::backends::open_rodio(sinky::AudioFormatEnum::I16, ExampleSinkMaker);
+    let mut backend = sinky::backends::open_rodio(sinky::AudioFormatConfig::S16, ExampleSinkMaker);
 
     let mut stdin = std::io::stdin();
     let mut buf = [0_u8; BUFFER_SIZE];

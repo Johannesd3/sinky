@@ -1,13 +1,13 @@
 use std::io::Write;
 
-use crate::{formats, AudioFormat, AudioFormatEnum, Sample, Sink, SinkError, SinkMaker};
+use crate::{formats, AudioFormat, AudioFormatConfig, Sample, Sink, SinkError, SinkMaker};
 
 pub fn open<W: Write + 'static, S: SinkMaker>(
     output: W,
-    format: AudioFormatEnum,
+    format: AudioFormatConfig,
     filters: S,
 ) -> S::Output {
-    use AudioFormatEnum::*;
+    use AudioFormatConfig::*;
 
     macro_rules! sink {
         ($format:path) => {
@@ -17,10 +17,10 @@ pub fn open<W: Write + 'static, S: SinkMaker>(
 
     match format {
         F32 => sink!(formats::F32),
-        I16 => sink!(formats::I16),
-        I32 => sink!(formats::I32),
-        I24_3 => sink!(formats::I24_3),
-        I24_4 => sink!(formats::I24_4),
+        S16 => sink!(formats::S16),
+        S32 => sink!(formats::S32),
+        S24_3 => sink!(formats::S24_3),
+        S24_4 => sink!(formats::S24_4),
     }
 }
 

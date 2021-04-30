@@ -75,8 +75,21 @@ pub mod formats;
 
 pub mod filters;
 
-mod config;
-pub use config::AudioFormatEnum;
+#[non_exhaustive]
+#[derive(Debug, Eq, PartialEq, Clone, Copy)]
+pub enum AudioFormatConfig {
+    F32,
+    S16,
+    S32,
+    S24_3,
+    S24_4,
+}
+
+impl Default for AudioFormatConfig {
+    fn default() -> Self {
+        Self::S16
+    }
+}
 
 pub trait SinkMaker {
     type Output;
