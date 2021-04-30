@@ -6,15 +6,6 @@ use thiserror::Error;
 use crate::formats::{F32, I16};
 use crate::{AudioFormat, AudioFormatEnum, Sink, SinkError, SinkMaker};
 
-trait SupportedFormat: AudioFormat
-where
-    Self::Sample: rodio::Sample,
-{
-}
-
-impl SupportedFormat for I16 {}
-impl SupportedFormat for F32 {}
-
 pub fn open<S: SinkMaker>(format: AudioFormatEnum, filters: S) -> S::Output {
     macro_rules! sink {
         ($format:path) => {
@@ -69,7 +60,7 @@ fn create_sink(
     Ok((sink, stream))
 }
 
-impl<F: SupportedFormat> RodioSink<F>
+impl<F: AudioFormat> RodioSink<F>
 where
     F::Sample: rodio::Sample,
 {
@@ -83,7 +74,7 @@ where
         }
     }
 }
-impl<F: SupportedFormat> Sink for RodioSink<F>
+impl<F: AudioFormat> Sink for RodioSink<F>
 where
     F::Sample: rodio::Sample,
 {
