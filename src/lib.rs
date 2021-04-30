@@ -81,7 +81,7 @@ pub use config::AudioFormatEnum;
 pub trait SinkMaker {
     type Output;
 
-    fn apply_filters<S: Sink + 'static>(&self, sink: S) -> Self::Output;
+    fn apply_filters<S: Sink + 'static>(self, sink: S) -> Self::Output;
 }
 
 pub mod backends;

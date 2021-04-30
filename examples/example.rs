@@ -9,7 +9,7 @@ struct ExampleSinkMaker;
 impl SinkMaker for ExampleSinkMaker {
     type Output = Box<dyn Sink<Format = formats::F32>>;
 
-    fn apply_filters<S: Sink + 'static>(&self, sink: S) -> Self::Output {
+    fn apply_filters<S: Sink + 'static>(self, sink: S) -> Self::Output {
         use filters::SinkExt;
 
         sink.add_converter(filters::SampleConverter::default())
