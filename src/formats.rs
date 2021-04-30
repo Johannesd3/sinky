@@ -1,4 +1,5 @@
-use super::AudioFormat;
+use crate::util::i24;
+use crate::AudioFormat;
 
 #[derive(Copy, Clone, Default, Debug)]
 pub struct F32;
@@ -60,19 +61,6 @@ impl AudioFormat for S32 {
         for sample in data {
             buf.extend(&sample.to_ne_bytes());
         }
-    }
-}
-
-#[derive(Copy, Clone, Debug)]
-#[allow(non_camel_case_types)]
-#[repr(transparent)]
-pub struct i24([u8; 3]);
-impl i24 {
-    #[inline]
-    fn pcm_from_i32(sample: i32) -> Self {
-        // drop the least significant byte
-        let [a, b, c, _d] = (sample >> 8).to_ne_bytes();
-        i24([a, b, c])
     }
 }
 

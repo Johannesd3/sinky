@@ -75,6 +75,8 @@ pub mod formats;
 
 pub mod filters;
 
+pub mod util;
+
 #[non_exhaustive]
 #[derive(Debug, Eq, PartialEq, Clone, Copy)]
 pub enum AudioFormatConfig {
