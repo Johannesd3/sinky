@@ -1,5 +1,5 @@
 // Reads F32 samples from stdin and outputs them using rodio.
- 
+
 use std::io::Read;
 
 use sinky::{filters, formats, Sink, SinkMaker};
@@ -12,8 +12,7 @@ impl SinkMaker for ExampleSinkMaker {
     fn apply_filters<S: Sink + 'static>(&self, sink: S) -> Self::Output {
         use filters::SinkExt;
 
-        sink.add_filter(filters::Requantizer)
-            .add_converter(filters::SampleConverter::default())
+        sink.add_converter(filters::SampleConverter::default())
             .add_filter(filters::Volume(0.8))
             .boxed()
     }

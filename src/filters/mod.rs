@@ -1,9 +1,6 @@
 mod convert;
 pub use convert::SampleConverter;
 
-mod requantizer;
-pub use requantizer::Requantizer;
-
 mod volume;
 pub use volume::Volume;
 
